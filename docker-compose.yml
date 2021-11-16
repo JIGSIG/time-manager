@@ -1,0 +1,70 @@
+# Version of docker-compose
+version: "3.6"
+
+# Containers we are going to run
+services:
+
+  # Our server container
+  server:
+    # The build parameters for this container.
+    build:
+      # Here we define that it should build from the current directory
+      context: ./api
+    environment:
+      # Variables to connect to our Postgres server
+      PGUSER: root
+      PGPASSWORD: root
+      PGDATABASE: api_dev
+      PGHOST: db
+      PGPORT: 5432
+      HTTPPORT: 4000
+
+    expose:
+      - "4000"
+    ports:
+      # Mapping the port to make the server app accessible outside of the container
+      - "4000:4000"
+    depends_on:
+      # The db container needs to be started before we start this container
+      - db
+    networks:
+      - time-manager
+  
+  db:
+    # We use the predefined Postgres image
+    image: postgres:14.0
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      # Set a path where Postgres should store the data
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - time-manager
+
+  client:
+    restart: always
+    build:
+      context: ./web_interfaces
+      dockerfile: Dockerfile
+    environment:
+      ENV: PROD
+    depends_on:
+      - server
+      - db
+    ports:
+      - "8080:80"
+
+# Define the volumes
+volumes:
+  pgdata:
+
+networks:
+  time-manager:
+    driver: bridge
