@@ -5,7 +5,7 @@ class ApiCallHelper {
 
   SharedPreferences? sharedPreferences;
 
-  final String endpoint = "http://192.168.100.2:4000/api";
+  final String endpoint = "http://192.168.100.3:4000/api";
 
   String get login => endpoint + "/registration/signin";
 
@@ -13,7 +13,11 @@ class ApiCallHelper {
 
   String get getAllWorkingTimes => endpoint + "/workingtimes";
 
-  String get getAllTeamMembers => endpoint + "/teams";
+  String get getManagerTeam => endpoint + "/teams/showManagerTeam";
+
+  String get addTeamMember => endpoint + "/teams/adduser";
+
+  String get removeTeamMember => endpoint + "/teams/removeuser";
 
   String get setClock => endpoint + "/clocks";
 
@@ -21,12 +25,16 @@ class ApiCallHelper {
 
   String get getUser => endpoint + "/users";
 
+  String get getAllUsers => endpoint + "/users";
+
   String get updateUser => endpoint + "/users";
 
   String get deleteUser => endpoint + "/users";
 
-  Map<String, String>? get headers =>
-      {"Authorization": "Bearer " + _getUserToken()};
+  Map<String, String>? get headers => {
+        "Authorization": "Bearer " + _getUserToken(),
+        'Content-Type': 'application/json',
+      };
 
   String _getUserToken() {
     return sharedPreferences!.getString("user-token") ?? "";

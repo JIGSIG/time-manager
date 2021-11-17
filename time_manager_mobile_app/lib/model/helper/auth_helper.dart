@@ -85,10 +85,8 @@ class TmUserHelper {
     final apiResult =
         await api.updateProfile(email: email, username: username, id: id);
     return apiResult.fold((l) {
-      print(runtimeType);
       return Left(NoInternetGlitch());
     }, (r) {
-      print(r);
       final user = TmUser.fromMap(jsonDecode(r)["data"]);
       return Right(user);
     });
@@ -107,6 +105,22 @@ class TmUserHelper {
       preferences.remove("user-token");
       preferences.remove("user-id");
       return const Right(null);
+    });
+  }
+
+  Future<Either<Glitch, List<TmUser>>> getAllUsers() async {
+    final apiResult = await api.getAllUsers();
+    return apiResult.fold((l) {
+      return Left(NoInternetGlitch());
+    }, (r) {
+      List data = jsonDecode(r)["data"];
+      final List<TmUser> list = List.generate(
+        data.length,
+        (index) => TmUser.fromMap(
+          data.elementAt(index),
+        ),
+      );
+      return Right(list);
     });
   }
 }

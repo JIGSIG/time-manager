@@ -54,7 +54,6 @@ class TmUserProvider extends ChangeNotifier {
   }
 
   Future<void> updateUsername({required String username}) async {
-    print(runtimeType);
     final tmUserHelperResult = await _helper.update(
         username: username, email: _tmUser!.email, id: _tmUser!.id);
     _setUser(tmUserHelperResult);
@@ -66,5 +65,10 @@ class TmUserProvider extends ChangeNotifier {
         username: _tmUser!.username, email: _tmUser!.email, id: _tmUser!.id);
     _setUser(tmUserHelperResult);
     _streamController.add(tmUserHelperResult);
+  }
+
+  Future<Either<Glitch, List<TmUser>>> getAllUsers() async {
+    final tmUserHelperResult = await _helper.getAllUsers();
+    return tmUserHelperResult;
   }
 }

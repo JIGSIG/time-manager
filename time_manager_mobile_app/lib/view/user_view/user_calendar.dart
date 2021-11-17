@@ -46,10 +46,10 @@ class _UserCalendarState extends State<UserCalendar> {
     streamSubscription = provider.workingTimesStream.listen((snapshot) {
       snapshot.fold(
           (l) => null,
-          (r) => kEvents = LinkedHashMap<DateTime, List<TmEvent>>(
+          (r) => kEvents..addAll(LinkedHashMap<DateTime, List<TmEvent>>(
                 equals: isSameDay,
                 hashCode: getHashCode,
-              )..addAll(r));
+              )..addAll(r)));
       setState(() {
         _selectedDay = _selectedDay;
         _focusedDay = _focusedDay;
@@ -176,6 +176,7 @@ class _UserCalendarState extends State<UserCalendar> {
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: ListTile(
+                          // ignore: avoid_print
                           onTap: () => print('${value[index]}'),
                           title: Text('${value[index]}'),
                         ),

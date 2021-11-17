@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'dart:ui';
+
 class TmUser {
   final int id;
   final String email;
@@ -36,7 +38,26 @@ class TmUser {
   static TmUser fromJson(String source) => fromMap(json.decode(source));
 
   @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is TmUser
+        && other.id == id
+        && other.email == email
+        && other.username == username
+        && other.role == role;
+  }
+
+  @override
+  int get hashCode => hashValues(id.hashCode, email.hashCode, username.hashCode, role.hashCode);
+
+  @override
   String toString() {
     return 'TmUser(id: $id, email: $email, username: $username, role: $role)';
   }
+
 }

@@ -94,6 +94,7 @@ class _UserHomeState extends State<UserHome> {
                               borderRadius: BorderRadius.circular(12.0),
                             ),
                             child: ListTile(
+                              // ignore: avoid_print
                               onTap: () => print('${value[index]}'),
                               title: Text('${value[index]}'),
                             ),

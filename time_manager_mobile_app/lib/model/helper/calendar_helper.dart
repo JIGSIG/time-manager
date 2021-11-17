@@ -44,7 +44,9 @@ class CalendarHelper {
         }
         _kEventSource.addAll({key: value});
       }
+
       return Right(_kEventSource);
     });
   }
+
 }

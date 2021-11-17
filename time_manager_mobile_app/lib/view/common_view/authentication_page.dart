@@ -57,7 +57,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final bodyH = size.height * (badInput ? .5 : .4);
+    final bodyH = size.height * (badInput ? .5 : .425);
     return Theme(
       data: ThemeData.dark(),
       child: Scaffold(
@@ -129,12 +129,12 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       height: bodyH,
                       child: tabIndex == 0
                           ? LoginBody(
-                              size: Size(size.width, size.height * .4),
+                              size: Size(size.width, bodyH),
                               emailController: emailController,
                               passwordController: passwordController,
                             )
                           : RegisterBody(
-                              size: Size(size.width, size.height * .4),
+                              size: Size(size.width, bodyH),
                               usernameController: usernameController,
                               emailController: emailController,
                               passwordController: passwordController,

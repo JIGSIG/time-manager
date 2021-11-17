@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:time_manager_mobile_app/model/core/user_core.dart';
 import 'package:time_manager_mobile_app/provider/auth_provider.dart';
 import 'package:time_manager_mobile_app/provider/clock_provider.dart';
+import 'package:time_manager_mobile_app/provider/team_provider.dart';
 import 'package:time_manager_mobile_app/provider/workingtimes_provider.dart';
 import 'package:time_manager_mobile_app/view/common_view/authentication_page.dart';
 import 'package:time_manager_mobile_app/view/home_page.dart';
@@ -61,6 +62,7 @@ void setup() {
   getIt.registerSingleton<TmUserProvider>(TmUserProvider());
   getIt.registerSingleton<WorkingTimesProvider>(WorkingTimesProvider());
   getIt.registerSingleton<ClockProvider>(ClockProvider());
+  getIt.registerSingleton<TeamProvider>(TeamProvider());
 }
 
 Future<void> connectWithToken() async {

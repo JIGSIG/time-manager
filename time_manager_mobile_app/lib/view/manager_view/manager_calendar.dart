@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:time_manager_mobile_app/app.dart';
 import 'package:time_manager_mobile_app/model/core/event_core.dart';
+import 'package:time_manager_mobile_app/model/core/team_core.dart';
 import 'package:time_manager_mobile_app/provider/auth_provider.dart';
+import 'package:time_manager_mobile_app/provider/team_provider.dart';
 import 'package:time_manager_mobile_app/provider/workingtimes_provider.dart';
 import 'package:time_manager_mobile_app/view/home_page.dart';
 
@@ -25,9 +27,11 @@ class _ManagerCalendarState extends State<ManagerCalendar> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-  final provider = getIt<WorkingTimesProvider>();
-  final userProvider = getIt<TmUserProvider>();
+  final worktimesProvider = getIt<WorkingTimesProvider>();
+  final managerProvider = getIt<TmUserProvider>();
+  final teamProvider = getIt<TeamProvider>();
   late final StreamSubscription<dynamic> streamSubscription;
+  TmTeam? team;
 
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
@@ -40,16 +44,21 @@ class _ManagerCalendarState extends State<ManagerCalendar> {
   void initState() {
     super.initState();
 
+    team = teamProvider.getTeam;
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-    provider.getAllWorkingTimes(userId: userProvider.getUser!.id);
-    streamSubscription = provider.workingTimesStream.listen((snapshot) {
+    worktimesProvider.getAllTeamMembersWorkingTimes(team: team!);
+    streamSubscription =
+        worktimesProvider.workingTimesStream.listen((snapshot) {
       snapshot.fold(
-          (l) => null,
-          (r) => kEvents = LinkedHashMap<DateTime, List<TmEvent>>(
-                equals: isSameDay,
-                hashCode: getHashCode,
-              )..addAll(r));
+        (l) => null,
+        (r) => kEvents.addAll(
+          LinkedHashMap<DateTime, List<TmEvent>>(
+            equals: isSameDay,
+            hashCode: getHashCode,
+          )..addAll(r),
+        ),
+      );
       setState(() {
         _selectedDay = _selectedDay;
         _focusedDay = _focusedDay;
@@ -176,6 +185,7 @@ class _ManagerCalendarState extends State<ManagerCalendar> {
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: ListTile(
+                          // ignore: avoid_print
                           onTap: () => print('${value[index]}'),
                           title: Text('${value[index]}'),
                         ),
@@ -187,6 +197,16 @@ class _ManagerCalendarState extends State<ManagerCalendar> {
             ),
           ],
         ),
+        floatingActionButton: team == null
+            ? null
+            : FloatingActionButton(
+                child: const Icon(
+                  Icons.add,
+                  size: 30,
+                ),
+                backgroundColor: HexColor('#FFA400'),
+                onPressed: null,
+              ),
       ),
     );
   }

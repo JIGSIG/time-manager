@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:time_manager_mobile_app/app.dart';
 import 'package:time_manager_mobile_app/model/core/user_core.dart';
@@ -73,7 +71,7 @@ class _ProfilePageDisplayState extends State<ProfilePageDisplay> {
                     navigateSecondPage(const EditImagePage(), context);
                   },
                   child: DisplayImage(
-                    imagePath: '',
+                    imagePath: 'https://avatarfiles.alphacoders.com/256/thumb-1920-256827.jpg',
                     onPressed: () {},
                   )),
               SizedBox(
@@ -152,7 +150,7 @@ class _ProfilePageDisplayState extends State<ProfilePageDisplay> {
   Widget buildAbout(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * .3,
+      height: MediaQuery.of(context).size.height * .2,
       child: Padding(
         padding: const EdgeInsets.all(0.0),
         child: Center(
@@ -228,14 +226,14 @@ class EditPhoneFormPageState extends State<EditPhoneFormPage> {
     super.dispose();
   }
 
-  void updateUserValue(String phone) {
-    String formattedPhoneNumber = "(" +
-        phone.substring(0, 3) +
-        ") " +
-        phone.substring(3, 6) +
-        "-" +
-        phone.substring(6, phone.length);
-  }
+  // void updateUserValue(String phone) {
+  //   String formattedPhoneNumber = "(" +
+  //       phone.substring(0, 3) +
+  //       ") " +
+  //       phone.substring(3, 6) +
+  //       "-" +
+  //       phone.substring(6, phone.length);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -286,7 +284,7 @@ class EditPhoneFormPageState extends State<EditPhoneFormPage> {
                             onPressed: () {
                               if (_formKey.currentState!.validate() &&
                                   isNumeric(phoneController.text)) {
-                                updateUserValue(phoneController.text);
+                                // updateUserValue(phoneController.text);
                                 Navigator.pop(context);
                               }
                             },
@@ -332,7 +330,6 @@ class EditNameFormPageState extends State<EditNameFormPage> {
   }
 
   void updateUserValue(String name) {
-    print(runtimeType);
     provider.updateUsername(username: name);
     streamSubscription = provider.userStream.listen((snapshot) {
       snapshot.fold((l) => null, (r) => null);
@@ -451,11 +448,11 @@ class _EditImagePageState extends State<EditImagePage> {
 
                       if (image == null) return;
 
-                      final location = await getApplicationDocumentsDirectory();
-                      final name = basename(image.path);
-                      final imageFile = File('${location.path}/$name');
-                      final newImage =
-                          await File(image.path).copy(imageFile.path);
+                      // final location = await getApplicationDocumentsDirectory();
+                      // final name = basename(image.path);
+                      // final imageFile = File('${location.path}/$name');
+                      // final newImage =
+                      //     await File(image.path).copy(imageFile.path);
                     },
                   ))),
           Padding(
