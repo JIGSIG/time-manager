@@ -1,42 +1,41 @@
-language: bash
-
-sudo: required
-services:
-  - docker
-
 env:
-  global:
-    - DOCKER_ENGINE_VERSION=1.10.3
-    - DOCKER_COMPOSE_VERSION=1.9.0
-    - INITIAL_ADMIN_USER=admin.user
-    - INITIAL_ADMIN_PASSWORD_PLAIN=admin123
-    - COMPOSE_FILES="-f ./docker-compose.yml"
-    - JEKYLL_SOURCE="."
-
+  # You may want to update this to whatever the latest version is, or keep it
+  # the same as your local machines. However, I have only tested it with 1.8.0+.
+  # There should be a time in the future when this is not necessary - it is
+  # explained in more detail below.
+  DOCKER_COMPOSE_VERSION: 1.8.0
 before_install:
-  - sudo sh -c 'echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" > /etc/apt/sources.list.d/docker.list'
-  - sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  # update is required to update the repositories to see the new packages for
+  # Docker.
   - sudo apt-get update
-  - sudo apt-key update
-  - sudo apt-get install -qqy --force-yes linux-image-extra-$(uname -r) apparmor
-  - sudo apt-get install -qqy --force-yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" docker-engine=${DOCKER_ENGINE_VERSION}\*
+# Now we can install the newer docker-engine which is required for the newer
+  # docker-composer we will install next. The messy options are to force it to
+  # be non-interactive (normally it asks you a bunch of config questions).
+  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+# Print out the current docker-compose version. Once this reports 1.6+ then we
+  # do not need the following steps.
+  - docker-compose --version
+# As of the writing of this script Travis has docker-compose v1.4.2, we need
+  # to update it to 1.8+. $DOCKER_COMPOSE_VERSION is provide from the `env`
+  # above.
+  - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - docker --version
+# Check that docker-compose is now running the latest version (or at least the
+  # one we specified). This is not to be confused with the version we printed
+  # before doing the update.
   - docker-compose --version
-
-script:
-  - ./
-  - travis_wait 20 ./ compose init
-  - ./ target set -t http://127.0.0.1 -u ${INITIAL_ADMIN_USER} -p ${INITIAL_ADMIN_PASSWORD_PLAIN}
-  - sleep 30
-  - ./ workspace -w Travis create
-  - ./ project -p TestProject -w Travis create
-  - ./ compose down
-  - docker-compose ${COMPOSE_FILES} build
-  - docker-compose ${COMPOSE_FILES} -p dockercompose up -d
-  - count=0; until docker logs dockercompose_site_1 | grep "Server running..." &> /dev/null || (( count++ > 12 )); do echo "Waiting $count"; sleep 5; done
-  - docker logs dockercompose_site_1
-  - docker logs dockercompose_site_1 | grep "Server running..." &> /dev/null
-  - curl -sL -w "%{http_code}\\n" "http://localhost/-docker-compose/" -o /dev/null | grep "200" &> /dev/null
+# Setup your application stack. You may need to tweak these commands if you
+  # doing out-of-the-ordinary docker-compose builds.
+  - docker-compose up --build
+  # - docker-compose build
+  # - docker-compose start
+# You will want this for logging. If one of your containers does not build for
+  # whatever reason it's best to report that now before your tests start
+  # otherwise it can be really tricky to debug why tests are failing sometimes.
+  - docker ps
+# This is just our script to setup all the database tables and other fixtures
+  # we need. You should remove this if it's not necessary or you have other
+  # scripts handling this.
+  # - docker/web/provision.sh
